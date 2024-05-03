@@ -8,7 +8,15 @@ app = func.FunctionApp()
 def ping(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Ping received.')
 
-   
+    if req.method == 'OPTIONS':
+        # Handle preflight requests (important for CORS)
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+        return func.HttpResponse('', status_code=204, headers=headers)
     
     if req.method == 'POST':
         headers = {
