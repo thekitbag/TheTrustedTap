@@ -1,30 +1,43 @@
-import { IonButton } from '@ionic/react';
+import { IonButton, IonList, IonItem, IonLabel } from '@ionic/react';
+
 import './ping.css';
 import axios from 'axios';
-import { API_URL } from '../../config.js';
-
-
-const handlePing = async () => {
-  try {
-      const response = await axios.post(`${API_URL}/ping`, {
-          message: 'ping' 
-      });
-
-      // Handle the response, maybe display an alert
-      console.log(response.data); // Should log the 'Pong' message
-  } catch (error) {
-      console.error("Ping error:", error); // Handle errors gracefully
-  }
-};
-
-
+import { API_URL } from '../../config';
+import { useEffect, useState } from 'react';
 
 interface ContainerProps { }
 
-const Ping: React.FC<ContainerProps> = () => {
+interface Establishment {
+  id: string; 
+  name: string;
+}
+
+const Search: React.FC<ContainerProps> = () => {
+
+  const [establishments, setEstablishments] = useState<Establishment[]>([]);
+
+  const handleSearch = async () => { 
+    try {
+        const response = await axios.get(`${API_URL}/getEstablishments`);
+        setEstablishments(response.data);
+    } catch (error) {
+        console.error("Error fetching establishments:", error); 
+    }
+}; 
+
   return (
-    <IonButton onClick={handlePing}>Ping</IonButton>
+      <> 
+          <IonButton onClick={handleSearch}>Search</IonButton>
+
+          <IonList>
+              {establishments.map((establishment) => (
+                  <IonItem key={establishment.id}>
+                      <IonLabel>{establishment.name}</IonLabel>
+                  </IonItem>
+              ))}
+          </IonList>
+      </>
   );
 };
 
-export default Ping;
+export default Search;
